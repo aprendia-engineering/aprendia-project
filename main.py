@@ -1,5 +1,6 @@
 from src.tracking import get_holistic_detector, process_frame, draw_landmarks
 from src.landmarks import extract_frame_vector, normalize_vector, SequenceBuffer
+from src.visualizer import draw_sequence_buffer
 import cv2
 
 if __name__ == "__main__":
@@ -16,15 +17,15 @@ if __name__ == "__main__":
             results = process_frame(frame, detector)
             frame = draw_landmarks(frame, results)
 
-            # Extrae y normaliza el vector del frame actual
             vector = extract_frame_vector(results)
             vector_norm = normalize_vector(vector)
             buffer.add(vector_norm)
 
-            # Cuando el buffer tiene 30 frames, la secuencia está lista
+            frame = draw_sequence_buffer(frame, buffer)
+
             estado = f"Buffer: {len(buffer.buffer)}/30"
             if buffer.is_ready():
-                secuencia = buffer.get_sequence()  # (30, 1629)
+                secuencia = buffer.get_sequence()
                 estado = f"Secuencia lista: {secuencia.shape}"
 
             cv2.putText(frame, estado, (10, 30),
